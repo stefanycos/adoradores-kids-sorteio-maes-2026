@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin — Rifa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+      :root {
+        --bg: #0d0d0d;
+        --surface: #161616;
+        --surface2: #1e1e1e;
+        --border: rgba(255, 255, 255, 0.08);
+        --border2: rgba(255, 255, 255, 0.14);
+        --text: #f0ede8;
+        --muted: #888;
+        --accent: #f5c842;
+        --accent2: #e8a020;
+        --green: #2ecc71;
+        --red: #e74c3c;
+        --orange: #f39c12;
+        --radius: 12px;
+        --font-display: 'Syne', sans-serif;
+        --font-body: 'DM Sans', sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-body);
+        min-height: 100vh;
+      }
+
+      /* LOGIN */
+      .login-screen {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+      .login-box {
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        border-radius: var(--radius);
+        padding: 2rem;
+        width: 100%;
+        max-width: 360px;
+      }
+      .login-box h2 {
+        font-family: var(--font-display);
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .login-box p {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 1.5rem;
+      }
+
+      /* NAV */
+      .nav {
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 0 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0;
+        overflow-x: auto;
+      }
+      .nav-brand {
+        font-family: var(--font-display);
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--accent);
+        padding: 14px 16px 14px 0;
+        margin-right: 8px;
+        white-space: nowrap;
+        border-right: 1px solid var(--border);
+        flex-shrink: 0;
+      }
+      .nav-tab {
+        padding: 14px 14px;
+        font-size: 13px;
+        color: var(--muted);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        white-space: nowrap;
+        transition: all 0.2s;
+      }
+      .nav-tab:hover {
+        color: var(--text);
+      }
+      .nav-tab.active {
+        color: var(--accent);
+        border-bottom-color: var(--accent);
+      }
+      .nav-logout {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--muted);
+        cursor: pointer;
+        padding: 14px 0;
+        flex-shrink: 0;
+      }
+      .nav-logout:hover {
+        color: var(--red);
+      }
+
+      /* PAGES */
+      .page {
+        display: none;
+        padding: 1.5rem;
+      }
+      .page.active {
+        display: block;
+      }
+
+      /* METRICS */
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 1.5rem;
+      }
+      @media (min-width: 600px) {
+        .metrics {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+      .metric {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1rem;
+      }
+      .metric-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .metric-val {
+        font-family: var(--font-display);
+        font-size: 26px;
+        font-weight: 700;
+      }
+      .metric-val.green {
+        color: var(--green);
+      }
+      .metric-val.orange {
+        color: var(--orange);
+      }
+      .metric-val.accent {
+        color: var(--accent);
+      }
+
+      /* ORDERS TABLE */
+      .section-title {
+        font-family: var(--font-display);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+      .orders-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        min-width: 600px;
+      }
+      th {
+        text-align: left;
+        padding: 10px 12px;
+        color: var(--muted);
+        font-weight: 500;
+        border-bottom: 1px solid var(--border2);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      td {
+        padding: 12px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+      }
+      tr:hover td {
+        background: var(--surface2);
+      }
+      .badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 9px;
+        border-radius: 20px;
+        letter-spacing: 0.3px;
+      }
+      .badge-pending {
+        background: rgba(243, 156, 18, 0.12);
+        color: var(--orange);
+        border: 1px solid rgba(243, 156, 18, 0.25);
+      }
+      .badge-confirmed {
+        background: rgba(46, 204, 113, 0.12);
+        color: var(--green);
+        border: 1px solid rgba(46, 204, 113, 0.25);
+      }
+      .badge-cancelled {
+        background: rgba(231, 76, 60, 0.1);
+        color: var(--red);
+        border: 1px solid rgba(231, 76, 60, 0.2);
+      }
+      .action-btn {
+        font-size: 12px;
+        padding: 5px 10px;
+        border-radius: 6px;
+        border: 1px solid var(--border2);
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+        margin-right: 4px;
+        font-family: var(--font-body);
+        transition: all 0.15s;
+      }
+      .action-btn.confirm {
+        border-color: rgba(46, 204, 113, 0.4);
+        color: var(--green);
+      }
+      .action-btn.confirm:hover {
+        background: rgba(46, 204, 113, 0.1);
+      }
+      .action-btn.cancel {
+        border-color: rgba(231, 76, 60, 0.4);
+        color: var(--red);
+      }
+      .action-btn.cancel:hover {
+        background: rgba(231, 76, 60, 0.1);
+      }
+      .empty {
+        text-align: center;
+        padding: 3rem;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      /* GRID */
+      .nums-grid-admin {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+        gap: 5px;
+      }
+      .num-cell {
+        aspect-ratio: 1;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-display);
+        font-size: 13px;
+        font-weight: 600;
+        background: var(--surface);
+      }
+      .num-cell.confirmed {
+        background: rgba(46, 204, 113, 0.1);
+        border-color: rgba(46, 204, 113, 0.3);
+        color: var(--green);
+      }
+      .num-cell.pending {
+        background: rgba(243, 156, 18, 0.1);
+        border-color: rgba(243, 156, 18, 0.3);
+        color: var(--orange);
+      }
+
+      /* FORMS */
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 500px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .form-group.full {
+        grid-column: 1/-1;
+      }
+      label {
+        font-size: 12px;
+        color: var(--muted);
+        letter-spacing: 0.3px;
+      }
+      input,
+      select,
+      textarea {
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        border-radius: 8px;
+        padding: 10px 12px;
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s;
+        width: 100%;
+      }
+      input:focus,
+      select:focus {
+        border-color: var(--accent);
+      }
+      select option {
+        background: var(--surface2);
+      }
+      .btn-save {
+        margin-top: 1.2rem;
+        padding: 12px 28px;
+        background: var(--accent);
+        color: #0d0d0d;
+        border: none;
+        border-radius: 8px;
+        font-family: var(--font-display);
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .btn-save:hover {
+        background: var(--accent2);
+      }
+      .save-ok {
+        font-size: 13px;
+        color: var(--green);
+        margin-left: 12px;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+      }
+      .card-title {
+        font-family: var(--font-display);
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      /* LOGIN FORM SHARED */
+      .f-label {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 4px;
+        display: block;
+      }
+      .f-input {
+        width: 100%;
+        background: var(--bg);
+        border: 1px solid var(--border2);
+        border-radius: 8px;
+        padding: 10px 14px;
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 14px;
+        outline: none;
+        margin-bottom: 12px;
+      }
+      .f-input:focus {
+        border-color: var(--accent);
+      }
+      .btn-login {
+        width: 100%;
+        padding: 12px;
+        background: var(--accent);
+        color: #0d0d0d;
+        border: none;
+        border-radius: 8px;
+        font-family: var(--font-display);
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .err-msg {
+        color: var(--red);
+        font-size: 13px;
+        margin-top: 8px;
+        text-align: center;
+      }
+      .loading-full {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 200px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .loader {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--border2);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        margin-right: 8px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .payer-info {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- LOGIN -->
+    <div class="login-screen" id="login-screen">
+      <div class="login-box">
+        <h2>Admin — Rifa</h2>
+        <p>Entre com seu e-mail e senha para acessar o painel.</p>
+        <label class="f-label">E-mail</label>
+        <input
+          class="f-input"
+          type="email"
+          id="l-email"
+          placeholder="seu@email.com"
+        />
+        <label class="f-label">Senha</label>
+        <input
+          class="f-input"
+          type="password"
+          id="l-pass"
+          placeholder="••••••••"
+          onkeydown="if(event.key==='Enter')doLogin()"
+        />
+        <button class="btn-login" onclick="doLogin()">Entrar</button>
+        <div class="err-msg" id="login-err"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN APP -->
+    <div id="admin-app" style="display: none">
+      <div class="nav">
+        <div class="nav-brand">🎟 Rifa Admin</div>
+        <div class="nav-tab active" onclick="switchTab('orders',this)">
+          Pedidos
+        </div>
+        <div class="nav-tab" onclick="switchTab('grid',this)">Mapa</div>
+        <div class="nav-tab" onclick="switchTab('config',this)">Configurar</div>
+        <div class="nav-logout" onclick="doLogout()">Sair</div>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="page active" id="tab-orders">
+        <div class="metrics" id="metrics-row">
+          <div class="metric">
+            <div class="metric-label">Confirmados</div>
+            <div class="metric-val green" id="m-conf">—</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Pendentes</div>
+            <div class="metric-val orange" id="m-pend">—</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Disponíveis</div>
+            <div class="metric-val" id="m-free">—</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Arrecadado</div>
+            <div class="metric-val accent" id="m-rev">—</div>
+          </div>
+        </div>
+        <div class="section-title">Pedidos</div>
+        <div
+          style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap"
+        >
+          <select
+            id="filter-status"
+            onchange="renderOrders()"
+            style="width: auto; padding: 6px 12px; font-size: 13px"
+          >
+            <option value="">Todos</option>
+            <option value="pending">Pendentes</option>
+            <option value="confirmed">Confirmados</option>
+            <option value="cancelled">Cancelados</option>
+          </select>
+        </div>
+        <div class="orders-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>WhatsApp</th>
+                <th>Números</th>
+                <th>Conta PIX pagadora</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="orders-tbody"></tbody>
+          </table>
+          <div id="no-orders" class="empty" style="display: none">
+            Nenhum pedido encontrado
+          </div>
+        </div>
+      </div>
+
+      <!-- GRID MAP -->
+      <div class="page" id="tab-grid">
+        <div class="section-title">Mapa dos números</div>
+        <div
+          style="display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap"
+        >
+          <span
+            style="
+              font-size: 12px;
+              color: var(--green);
+              display: flex;
+              align-items: center;
+              gap: 5px;
+            "
+            ><span
+              style="
+                display: inline-block;
+                width: 10px;
+                height: 10px;
+                background: rgba(46, 204, 113, 0.3);
+                border-radius: 3px;
+              "
+            ></span
+            >Confirmado</span
+          >
+          <span
+            style="
+              font-size: 12px;
+              color: var(--orange);
+              display: flex;
+              align-items: center;
+              gap: 5px;
+            "
+            ><span
+              style="
+                display: inline-block;
+                width: 10px;
+                height: 10px;
+                background: rgba(243, 156, 18, 0.3);
+                border-radius: 3px;
+              "
+            ></span
+            >Reservado</span
+          >
+          <span
+            style="
+              font-size: 12px;
+              color: var(--muted);
+              display: flex;
+              align-items: center;
+              gap: 5px;
+            "
+            ><span
+              style="
+                display: inline-block;
+                width: 10px;
+                height: 10px;
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 3px;
+              "
+            ></span
+            >Livre</span
+          >
+        </div>
+        <div class="nums-grid-admin" id="admin-num-grid"></div>
+      </div>
+
+      <!-- CONFIG -->
+      <div class="page" id="tab-config">
+        <div class="card">
+          <div class="card-title">Informações da rifa</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nome da rifa *</label
+              ><input id="cfg-title" placeholder="Ex: Rifa do iPhone 16 Pro" />
+            </div>
+            <div class="form-group">
+              <label>Data do sorteio *</label
+              ><input id="cfg-date" placeholder="Ex: 30 de abril de 2025" />
+            </div>
+            <div class="form-group">
+              <label>Quantidade de números</label>
+              <select id="cfg-count">
+                <option value="50">50</option>
+                <option value="100" selected>100</option>
+                <option value="200">200</option>
+                <option value="500">500</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Valor por número (R$)</label
+              ><input
+                type="number"
+                id="cfg-price"
+                min="1"
+                step="0.01"
+                placeholder="10.00"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Dados PIX</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Chave PIX (telefone, CPF, e-mail ou aleatória)</label
+              ><input id="cfg-pix" placeholder="Ex: 11999990000" />
+            </div>
+            <div class="form-group">
+              <label>Nome do beneficiário</label
+              ><input id="cfg-pixname" placeholder="Seu nome completo" />
+            </div>
+            <div class="form-group">
+              <label>Cidade (para o QR Code)</label
+              ><input id="cfg-city" placeholder="Ex: SAO PAULO" />
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">WhatsApp do organizador</div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Número com código do país (somente dígitos)</label
+              ><input id="cfg-wa" placeholder="5511999990000" />
+            </div>
+          </div>
+          <div style="font-size: 12px; color: var(--muted); margin-top: 6px">
+            Pedidos confirmados/cancelados abrem mensagem automática no WhatsApp
+            do participante.
+          </div>
+        </div>
+        <div
+          style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px"
+        >
+          <button class="btn-save" onclick="saveConfig()">
+            Salvar configurações
+          </button>
+          <span class="save-ok" id="save-ok" style="display: none"
+            >✅ Salvo!</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const SUPABASE_URL = 'https://oysccpyxzoltgticslxg.supabase.co';
+      const SUPABASE_ANON_KEY =
+        'sb_publishable_cMSvSa87_re3vAhuc9uzCQ_qlOYBh8f';
+      const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      let allOrders = [];
+      let cfg = {};
+
+      async function doLogin() {
+        const email = document.getElementById('l-email').value.trim();
+        const pass = document.getElementById('l-pass').value;
+        const { error } = await sb.auth.signInWithPassword({
+          email,
+          password: pass,
+        });
+        if (error) {
+          document.getElementById('login-err').textContent =
+            'E-mail ou senha incorretos.';
+          return;
+        }
+        showApp();
+      }
+
+      async function doLogout() {
+        await sb.auth.signOut();
+        document.getElementById('admin-app').style.display = 'none';
+        document.getElementById('login-screen').style.display = 'flex';
+      }
+
+      async function showApp() {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('admin-app').style.display = 'block';
+        await loadConfig();
+        await loadOrders();
+        sb.channel('orders-admin')
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'orders' },
+            () => loadOrders()
+          )
+          .subscribe();
+      }
+
+      async function loadConfig() {
+        const { data } = await sb.from('config').select('*').single();
+        if (!data) return;
+        cfg = data;
+        document.getElementById('cfg-title').value = data.title || '';
+        document.getElementById('cfg-date').value = data.draw_date || '';
+        document.getElementById('cfg-count').value = data.num_count || 100;
+        document.getElementById('cfg-price').value =
+          data.price_per_number || 10;
+        document.getElementById('cfg-pix').value = data.pix_key || '';
+        document.getElementById('cfg-pixname').value = data.pix_name || '';
+        document.getElementById('cfg-city').value = data.city || '';
+        document.getElementById('cfg-wa').value = data.organizer_wa || '';
+      }
+
+      async function saveConfig() {
+        const payload = {
+          id: 1,
+          title: document.getElementById('cfg-title').value,
+          draw_date: document.getElementById('cfg-date').value,
+          num_count: parseInt(document.getElementById('cfg-count').value),
+          price_per_number: parseFloat(
+            document.getElementById('cfg-price').value
+          ),
+          pix_key: document.getElementById('cfg-pix').value,
+          pix_name: document.getElementById('cfg-pixname').value,
+          city: document.getElementById('cfg-city').value.toUpperCase(),
+          organizer_wa: document.getElementById('cfg-wa').value,
+        };
+        await sb.from('config').upsert(payload);
+        cfg = payload;
+        const ok = document.getElementById('save-ok');
+        ok.style.display = 'inline';
+        setTimeout(() => (ok.style.display = 'none'), 2500);
+      }
+
+      async function loadOrders() {
+        const { data } = await sb
+          .from('orders')
+          .select('*')
+          .order('created_at', { ascending: false });
+        allOrders = data || [];
+        renderOrders();
+        updateMetrics();
+        buildAdminGrid();
+      }
+
+      function renderOrders() {
+        const filter = document.getElementById('filter-status').value;
+        const list = filter
+          ? allOrders.filter((o) => o.status === filter)
+          : allOrders;
+        const tbody = document.getElementById('orders-tbody');
+        tbody.innerHTML = '';
+        document.getElementById('no-orders').style.display =
+          list.length === 0 ? 'block' : 'none';
+        list.forEach((o) => {
+          const tr = document.createElement('tr');
+          const payerCell = o.payer_pix
+            ? `<span style="color:var(--text)">${o.payer_pix}</span>`
+            : `<span style="color:var(--muted);font-style:italic">Própria conta</span>`;
+          const actions =
+            o.status === 'pending'
+              ? `<button class="action-btn confirm" onclick="confirmOrder('${
+                  o.id
+                }','${o.name}','${o.phone}','${o.numbers.join(
+                  ', '
+                )}')">Confirmar</button>
+         <button class="action-btn cancel" onclick="cancelOrder('${o.id}','${
+                  o.name
+                }','${o.phone}','${o.numbers.join(', ')}')">Cancelar</button>`
+              : `<span style="font-size:12px;color:var(--muted)">—</span>`;
+          tr.innerHTML = `
+      <td style="font-weight:500">${o.name}</td>
+      <td><a href="https://wa.me/${o.phone.replace(
+        /\D/g,
+        ''
+      )}" target="_blank" style="color:var(--green);text-decoration:none">${
+            o.phone
+          }</a></td>
+      <td style="font-family:monospace;font-size:12px">${o.numbers.join(
+        ', '
+      )}</td>
+      <td>${payerCell}</td>
+      <td style="font-weight:600;color:var(--accent)">R$ ${parseFloat(o.total)
+        .toFixed(2)
+        .replace('.', ',')}</td>
+      <td><span class="badge badge-${o.status}">${
+            {
+              pending: 'Aguardando',
+              confirmed: 'Confirmado',
+              cancelled: 'Cancelado',
+            }[o.status]
+          }</span></td>
+      <td>${actions}</td>`;
+          tbody.appendChild(tr);
+        });
+      }
+
+      async function confirmOrder(id, name, phone, nums) {
+        await sb.from('orders').update({ status: 'confirmed' }).eq('id', id);
+        const msg = encodeURIComponent(
+          `Olá ${name}! ✅ Seu pagamento foi confirmado!\n\nVocê está participando da rifa *${cfg.title}* com os números: *${nums}*\n\nBoa sorte! 🍀`
+        );
+        window.open(
+          `https://wa.me/${phone.replace(/\D/g, '')}?text=${msg}`,
+          '_blank'
+        );
+        await loadOrders();
+      }
+
+      async function cancelOrder(id, name, phone, nums) {
+        if (!confirm(`Cancelar reserva de ${name}?`)) return;
+        await sb.from('orders').update({ status: 'cancelled' }).eq('id', id);
+        const msg = encodeURIComponent(
+          `Olá ${name}! ⚠️ Não identificamos o pagamento para os números *${nums}* da rifa *${cfg.title}*.\n\nA reserva foi cancelada. Se quiser, acesse o link e tente novamente!`
+        );
+        window.open(
+          `https://wa.me/${phone.replace(/\D/g, '')}?text=${msg}`,
+          '_blank'
+        );
+        await loadOrders();
+      }
+
+      function updateMetrics() {
+        const confirmed = allOrders.filter((o) => o.status === 'confirmed');
+        const pending = allOrders.filter((o) => o.status === 'pending');
+        const confNums = new Set(confirmed.flatMap((o) => o.numbers));
+        const pendNums = new Set(pending.flatMap((o) => o.numbers));
+        const total = cfg.num_count || 100;
+        const price = parseFloat(cfg.price_per_number) || 10;
+        document.getElementById('m-conf').textContent = confNums.size;
+        document.getElementById('m-pend').textContent = pendNums.size;
+        document.getElementById('m-free').textContent =
+          total - confNums.size - pendNums.size;
+        document.getElementById('m-rev').textContent =
+          'R$ ' +
+          (confNums.size * price).toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+          });
+      }
+
+      function buildAdminGrid() {
+        const grid = document.getElementById('admin-num-grid');
+        grid.innerHTML = '';
+        const confirmed = new Set(
+          allOrders
+            .filter((o) => o.status === 'confirmed')
+            .flatMap((o) => o.numbers)
+        );
+        const pending = new Set(
+          allOrders
+            .filter((o) => o.status === 'pending')
+            .flatMap((o) => o.numbers)
+        );
+        const count = cfg.num_count || 100;
+        for (let i = 1; i <= count; i++) {
+          const n = String(i).padStart(2, '0');
+          const el = document.createElement('div');
+          el.className =
+            'num-cell' +
+            (confirmed.has(n)
+              ? ' confirmed'
+              : pending.has(n)
+              ? ' pending'
+              : '');
+          el.textContent = n;
+          grid.appendChild(el);
+        }
+      }
+
+      function switchTab(id, el) {
+        document
+          .querySelectorAll('.page')
+          .forEach((p) => p.classList.remove('active'));
+        document
+          .querySelectorAll('.nav-tab')
+          .forEach((t) => t.classList.remove('active'));
+        document.getElementById('tab-' + id).classList.add('active');
+        el.classList.add('active');
+      }
+
+      // Auto-login if session exists
+      sb.auth.getSession().then(({ data: { session } }) => {
+        if (session) showApp();
+      });
+    </script>
+  </body>
+</html>

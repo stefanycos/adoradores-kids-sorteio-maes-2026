@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title id="page-title">Rifa Online</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <style>
+      :root {
+        --bg: #0d0d0d;
+        --surface: #161616;
+        --surface2: #1e1e1e;
+        --border: rgba(255, 255, 255, 0.08);
+        --border2: rgba(255, 255, 255, 0.14);
+        --text: #f0ede8;
+        --muted: #888;
+        --accent: #f5c842;
+        --accent2: #e8a020;
+        --green: #2ecc71;
+        --red: #e74c3c;
+        --orange: #f39c12;
+        --radius: 12px;
+        --font-display: 'Syne', sans-serif;
+        --font-body: 'DM Sans', sans-serif;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-body);
+        min-height: 100vh;
+      }
+
+      /* HEADER */
+      .hero {
+        background: linear-gradient(135deg, #1a1200 0%, #0d0d0d 60%);
+        border-bottom: 1px solid var(--border);
+        padding: 2rem 1.5rem 1.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::before {
+        content: '';
+        position: absolute;
+        top: -60px;
+        right: -60px;
+        width: 220px;
+        height: 220px;
+        background: radial-gradient(
+          circle,
+          rgba(245, 200, 66, 0.15) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .hero-tag {
+        display: inline-block;
+        font-family: var(--font-display);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: rgba(245, 200, 66, 0.1);
+        border: 1px solid rgba(245, 200, 66, 0.25);
+        padding: 4px 10px;
+        border-radius: 20px;
+        margin-bottom: 12px;
+      }
+      .hero h1 {
+        font-family: var(--font-display);
+        font-size: clamp(1.6rem, 5vw, 2.4rem);
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
+      }
+      .hero-meta {
+        font-size: 14px;
+        color: var(--muted);
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-top: 10px;
+      }
+      .hero-meta span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .price-badge {
+        font-family: var(--font-display);
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--accent);
+      }
+
+      /* STATS */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: var(--border);
+        border-bottom: 1px solid var(--border);
+      }
+      .stat {
+        background: var(--surface);
+        padding: 14px 12px;
+        text-align: center;
+      }
+      .stat-val {
+        font-family: var(--font-display);
+        font-size: 22px;
+        font-weight: 700;
+      }
+      .stat-label {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 2px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      /* LEGEND */
+      .legend {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 12px 1.5rem;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 3px;
+      }
+
+      /* NUMBERS GRID */
+      .grid-wrap {
+        padding: 1.5rem;
+      }
+      .grid-title {
+        font-family: var(--font-display);
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+      .nums-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+        gap: 6px;
+      }
+      .num-btn {
+        aspect-ratio: 1;
+        border: 1px solid var(--border2);
+        border-radius: 8px;
+        background: var(--surface);
+        color: var(--text);
+        font-family: var(--font-display);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .num-btn:hover:not(.taken):not(.pending) {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: rgba(245, 200, 66, 0.06);
+      }
+      .num-btn.selected {
+        background: rgba(245, 200, 66, 0.15);
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .num-btn.taken {
+        background: rgba(46, 204, 113, 0.08);
+        border-color: rgba(46, 204, 113, 0.3);
+        color: var(--green);
+        cursor: not-allowed;
+      }
+      .num-btn.pending {
+        background: rgba(243, 156, 18, 0.08);
+        border-color: rgba(243, 156, 18, 0.3);
+        color: var(--orange);
+        cursor: not-allowed;
+      }
+
+      /* SELECTION BAR */
+      .selection-bar {
+        position: sticky;
+        bottom: 0;
+        background: var(--surface2);
+        border-top: 1px solid var(--border2);
+        padding: 1rem 1.5rem;
+        display: none;
+      }
+      .selection-bar.visible {
+        display: block;
+      }
+      .sel-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .sel-nums {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .sel-total {
+        font-family: var(--font-display);
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--accent);
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .form-row.full {
+        grid-template-columns: 1fr;
+      }
+      input[type='text'],
+      input[type='tel'],
+      input[type='email'] {
+        width: 100%;
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        border-radius: 8px;
+        padding: 10px 14px;
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      input:focus {
+        border-color: var(--accent);
+      }
+      input::placeholder {
+        color: var(--muted);
+      }
+      .form-label {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 4px;
+        display: block;
+        letter-spacing: 0.3px;
+      }
+      .btn-pix {
+        width: 100%;
+        padding: 14px;
+        background: var(--accent);
+        color: #0d0d0d;
+        border: none;
+        border-radius: 10px;
+        font-family: var(--font-display);
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        letter-spacing: 0.3px;
+        transition: background 0.2s, transform 0.1s;
+      }
+      .btn-pix:hover {
+        background: var(--accent2);
+      }
+      .btn-pix:active {
+        transform: scale(0.98);
+      }
+      .btn-pix:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      /* PIX MODAL */
+      .modal-bg {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+      .modal-bg.open {
+        display: flex;
+      }
+      .modal {
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        max-width: 420px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .modal-title {
+        font-family: var(--font-display);
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .modal-sub {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 1.2rem;
+      }
+      .pix-card {
+        background: var(--bg);
+        border: 1px solid var(--border2);
+        border-radius: 10px;
+        padding: 1.2rem;
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      .pix-card canvas {
+        margin: 0 auto 12px;
+        display: block;
+      }
+      .pix-label {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .pix-key {
+        font-family: var(--font-display);
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--accent);
+        margin-bottom: 4px;
+      }
+      .pix-name {
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 1rem;
+      }
+      .pix-amount-label {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .pix-amount {
+        font-family: var(--font-display);
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--accent);
+      }
+      .copypaste-box {
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 11px;
+        font-family: monospace;
+        color: var(--muted);
+        word-break: break-all;
+        margin: 10px 0;
+        cursor: pointer;
+        transition: border-color 0.2s;
+        position: relative;
+      }
+      .copypaste-box:hover {
+        border-color: var(--accent);
+        color: var(--text);
+      }
+      .copy-hint {
+        font-size: 11px;
+        color: var(--accent);
+        margin-top: 4px;
+        text-align: center;
+      }
+      .warning-box {
+        background: rgba(243, 156, 18, 0.08);
+        border: 1px solid rgba(243, 156, 18, 0.25);
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 13px;
+        color: var(--orange);
+        margin-bottom: 1rem;
+        line-height: 1.5;
+      }
+      .confirmed-box {
+        background: rgba(46, 204, 113, 0.08);
+        border: 1px solid rgba(46, 204, 113, 0.25);
+        border-radius: 8px;
+        padding: 1rem;
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      .confirmed-box .icon {
+        font-size: 32px;
+        margin-bottom: 6px;
+      }
+      .confirmed-box .msg {
+        font-size: 14px;
+        color: var(--green);
+        line-height: 1.5;
+      }
+      .btn-close {
+        width: 100%;
+        padding: 12px;
+        background: transparent;
+        border: 1px solid var(--border2);
+        border-radius: 8px;
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 8px;
+      }
+      .btn-close:hover {
+        background: var(--surface2);
+      }
+      .loading {
+        text-align: center;
+        padding: 2rem;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .loader {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        border: 2px solid var(--border2);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        margin-bottom: 8px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* TOAST */
+      .toast {
+        position: fixed;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        border-radius: 8px;
+        padding: 10px 16px;
+        font-size: 13px;
+        color: var(--text);
+        z-index: 200;
+        opacity: 0;
+        transition: opacity 0.3s;
+        white-space: nowrap;
+      }
+      .toast.show {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hero">
+      <div class="hero-tag">🎟 Rifa Online</div>
+      <h1 id="raffle-title">Carregando...</h1>
+      <div class="hero-meta">
+        <span id="raffle-date">—</span>
+        <span class="price-badge" id="raffle-price">R$ —</span>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-val" id="st-sold">—</div>
+        <div class="stat-label">Pagos</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="st-pend">—</div>
+        <div class="stat-label">Reservados</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="st-free">—</div>
+        <div class="stat-label">Livres</div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <div
+          class="legend-dot"
+          style="background: rgba(245, 200, 66, 0.4); border: 1px solid #f5c842"
+        ></div>
+        Selecionado
+      </div>
+      <div class="legend-item">
+        <div
+          class="legend-dot"
+          style="background: rgba(46, 204, 113, 0.3); border: 1px solid #2ecc71"
+        ></div>
+        Pago
+      </div>
+      <div class="legend-item">
+        <div
+          class="legend-dot"
+          style="background: rgba(243, 156, 18, 0.3); border: 1px solid #f39c12"
+        ></div>
+        Reservado
+      </div>
+      <div class="legend-item">
+        <div
+          class="legend-dot"
+          style="
+            background: #1e1e1e;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+          "
+        ></div>
+        Livre
+      </div>
+    </div>
+
+    <div class="grid-wrap">
+      <div class="grid-title">Escolha seus números</div>
+      <div class="nums-grid" id="nums-grid">
+        <div class="loading">
+          <div class="loader"></div>
+          <br />Carregando...
+        </div>
+      </div>
+    </div>
+
+    <div class="selection-bar" id="sel-bar">
+      <div class="sel-info">
+        <div class="sel-nums">Selecionados: <span id="sel-list">—</span></div>
+        <div class="sel-total" id="sel-total">R$ 0</div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label class="form-label">Nome completo *</label>
+          <input type="text" id="inp-name" placeholder="Seu nome" />
+        </div>
+        <div>
+          <label class="form-label">WhatsApp (com DDD) *</label>
+          <input type="tel" id="inp-phone" placeholder="11 99999-9999" />
+        </div>
+      </div>
+      <div class="form-row full" style="margin-bottom: 10px">
+        <div>
+          <label class="form-label"
+            >Conta PIX que pagou
+            <span style="color: var(--muted)"
+              >(deixe em branco se for a sua própria conta)</span
+            ></label
+          >
+          <input
+            type="text"
+            id="inp-payer-pix"
+            placeholder="Ex: cpf, e-mail ou telefone do pagador"
+          />
+        </div>
+      </div>
+      <button class="btn-pix" id="btn-pix" onclick="openPayment()">
+        Ver PIX e reservar números
+      </button>
+    </div>
+
+    <!-- PIX MODAL -->
+    <div class="modal-bg" id="pix-modal">
+      <div class="modal">
+        <div class="modal-title">Pague via PIX</div>
+        <div class="modal-sub">
+          Seus números ficam reservados por
+          <strong style="color: var(--accent)">30 minutos</strong>
+        </div>
+        <div class="pix-card">
+          <canvas id="qr-canvas"></canvas>
+          <div class="pix-label">Chave PIX</div>
+          <div class="pix-key" id="modal-pix-key">—</div>
+          <div class="pix-name" id="modal-pix-name">—</div>
+          <div class="pix-amount-label">Valor exato</div>
+          <div class="pix-amount" id="modal-pix-amount">R$ 0</div>
+        </div>
+        <div class="pix-label" style="margin-bottom: 4px">
+          Código copia e cola (com valor incluso)
+        </div>
+        <div
+          class="copypaste-box"
+          id="pix-copypaste"
+          onclick="copyPix()"
+          title="Clique para copiar"
+        >
+          —
+        </div>
+        <div class="copy-hint" id="copy-hint">
+          👆 Clique para copiar o código
+        </div>
+        <div class="warning-box">
+          Após pagar, aguarde a confirmação via WhatsApp. Se não receber em até
+          1h, fale com o organizador.
+        </div>
+        <button class="btn-close" onclick="closeModal()">Fechar</button>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      // ===================== CONFIG - EDIT IN admin.html =====================
+      const SUPABASE_URL = 'https://oysccpyxzoltgticslxg.supabase.co';
+      const SUPABASE_ANON_KEY =
+        'sb_publishable_cMSvSa87_re3vAhuc9uzCQ_qlOYBh8f';
+      // ======================================================================
+
+      const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      let config = {};
+      let selected = [];
+      let allOrders = [];
+
+      async function init() {
+        const { data: cfg } = await sb.from('config').select('*').single();
+        if (!cfg) {
+          document.getElementById('raffle-title').textContent =
+            'Rifa não configurada';
+          return;
+        }
+        config = cfg;
+        document.title = cfg.title;
+        document.getElementById('page-title').textContent = cfg.title;
+        document.getElementById('raffle-title').textContent = cfg.title;
+        document.getElementById('raffle-date').textContent =
+          '📅 ' + cfg.draw_date;
+        document.getElementById('raffle-price').textContent =
+          'R$ ' +
+          parseFloat(cfg.price_per_number).toFixed(2).replace('.', ',') +
+          ' por número';
+        await loadNumbers();
+      }
+
+      async function loadNumbers() {
+        const { data: orders } = await sb
+          .from('orders')
+          .select('numbers,status')
+          .neq('status', 'cancelled');
+        allOrders = orders || [];
+        const taken = {},
+          pending = {};
+        allOrders.forEach((o) => {
+          o.numbers.forEach((n) => {
+            if (o.status === 'confirmed') taken[n] = true;
+            else pending[n] = true;
+          });
+        });
+        buildGrid(taken, pending);
+        const total = config.num_count || 100;
+        const soldCount = Object.keys(taken).length;
+        const pendCount = Object.keys(pending).length;
+        document.getElementById('st-sold').textContent = soldCount;
+        document.getElementById('st-pend').textContent = pendCount;
+        document.getElementById('st-free').textContent =
+          total - soldCount - pendCount;
+      }
+
+      function buildGrid(taken, pending) {
+        const grid = document.getElementById('nums-grid');
+        grid.innerHTML = '';
+        const count = config.num_count || 100;
+        for (let i = 1; i <= count; i++) {
+          const n = String(i).padStart(2, '0');
+          const btn = document.createElement('div');
+          btn.className = 'num-btn';
+          btn.textContent = n;
+          btn.dataset.num = n;
+          if (taken[n]) {
+            btn.classList.add('taken');
+            btn.title = 'Pago';
+          } else if (pending[n]) {
+            btn.classList.add('pending');
+            btn.title = 'Reservado';
+          } else {
+            btn.onclick = () => toggleNum(n, btn);
+          }
+          grid.appendChild(btn);
+        }
+      }
+
+      function toggleNum(n, btn) {
+        const idx = selected.indexOf(n);
+        if (idx > -1) {
+          selected.splice(idx, 1);
+          btn.classList.remove('selected');
+        } else {
+          selected.push(n);
+          btn.classList.add('selected');
+        }
+        updateBar();
+      }
+
+      function updateBar() {
+        const bar = document.getElementById('sel-bar');
+        const price = parseFloat(config.price_per_number) || 10;
+        if (selected.length > 0) {
+          bar.classList.add('visible');
+          document.getElementById('sel-list').textContent = selected.join(', ');
+          document.getElementById('sel-total').textContent =
+            'R$ ' + (selected.length * price).toFixed(2).replace('.', ',');
+        } else {
+          bar.classList.remove('visible');
+        }
+      }
+
+      // PIX BR Code / EMV generator (simplified, works for Pix chave aleatória/telefone/cpf/email)
+      function generatePixCode(key, name, city, amount) {
+        function pad(id, val) {
+          const v = String(val);
+          return id + String(v.length).padStart(2, '0') + v;
+        }
+        const pixKey = pad('01', key);
+        const gui = pad('00', 'br.gov.bcb.pix');
+        const mai = pad('26', gui + pixKey);
+        const amt = amount.toFixed(2);
+        const txid = pad('05', '***');
+        const addData = pad('62', txid);
+        const pre =
+          '000201' +
+          mai +
+          '52040000' +
+          '5303986' +
+          pad('54', amt) +
+          '5802BR' +
+          pad('59', name.substring(0, 25)) +
+          pad('60', city.substring(0, 15)) +
+          addData +
+          '6304';
+        function crc16(s) {
+          let crc = 0xffff;
+          for (let i = 0; i < s.length; i++) {
+            crc ^= s.charCodeAt(i) << 8;
+            for (let j = 0; j < 8; j++)
+              crc = crc & 0x8000 ? (crc << 1) ^ 0x1021 : crc << 1;
+          }
+          return (crc & 0xffff).toString(16).toUpperCase().padStart(4, '0');
+        }
+        return pre + crc16(pre);
+      }
+
+      async function openPayment() {
+        const name = document.getElementById('inp-name').value.trim();
+        const phone = document.getElementById('inp-phone').value.trim();
+        const payerPix = document.getElementById('inp-payer-pix').value.trim();
+        if (!name || !phone) {
+          showToast('Preencha seu nome e WhatsApp');
+          return;
+        }
+        if (selected.length === 0) return;
+
+        const btn = document.getElementById('btn-pix');
+        btn.disabled = true;
+        btn.textContent = 'Reservando...';
+
+        const price = parseFloat(config.price_per_number) || 10;
+        const total = selected.length * price;
+        const { error } = await sb.from('orders').insert({
+          name,
+          phone,
+          payer_pix: payerPix || null,
+          numbers: selected,
+          total,
+          status: 'pending',
+        });
+
+        btn.disabled = false;
+        btn.textContent = 'Ver PIX e reservar números';
+
+        if (error) {
+          showToast('Erro ao reservar. Tente novamente.');
+          return;
+        }
+
+        // Show modal
+        document.getElementById('pix-modal').classList.add('open');
+        document.getElementById('modal-pix-key').textContent = config.pix_key;
+        document.getElementById('modal-pix-name').textContent = config.pix_name;
+        document.getElementById('modal-pix-amount').textContent =
+          'R$ ' + total.toFixed(2).replace('.', ',');
+
+        const pixCode = generatePixCode(
+          config.pix_key,
+          config.pix_name,
+          config.city || 'BRASIL',
+          total
+        );
+        document.getElementById('pix-copypaste').textContent = pixCode;
+
+        QRCode.toCanvas(document.getElementById('qr-canvas'), pixCode, {
+          width: 160,
+          margin: 1,
+        });
+
+        // Mark as pending in UI
+        selected.forEach((n) => {
+          const btn = document.querySelector(`.num-btn[data-num="${n}"]`);
+          if (btn) {
+            btn.classList.remove('selected');
+            btn.classList.add('pending');
+            btn.onclick = null;
+          }
+        });
+        selected = [];
+        updateBar();
+        await loadNumbers();
+      }
+
+      function copyPix() {
+        const code = document.getElementById('pix-copypaste').textContent;
+        navigator.clipboard.writeText(code).then(() => {
+          document.getElementById('copy-hint').textContent = '✅ Copiado!';
+          setTimeout(
+            () =>
+              (document.getElementById('copy-hint').textContent =
+                '👆 Clique para copiar o código'),
+            2000
+          );
+        });
+      }
+
+      function closeModal() {
+        document.getElementById('pix-modal').classList.remove('open');
+      }
+
+      function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+      }
+
+      // Realtime updates
+      sb.channel('orders')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'orders' },
+          () => loadNumbers()
+        )
+        .subscribe();
+
+      init();
+    </script>
+  </body>
+</html>
