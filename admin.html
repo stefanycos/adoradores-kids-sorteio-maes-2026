@@ -3,30 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin — Rifa</title>
+    <title>Admin 🎟️ Rifa</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap"
       rel="stylesheet"
     />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
       :root {
-        --bg: #0d0d0d;
-        --surface: #161616;
-        --surface2: #1e1e1e;
-        --border: rgba(255, 255, 255, 0.08);
-        --border2: rgba(255, 255, 255, 0.14);
-        --text: #f0ede8;
-        --muted: #888;
-        --accent: #f5c842;
-        --accent2: #e8a020;
-        --green: #2ecc71;
-        --red: #e74c3c;
-        --orange: #f39c12;
-        --radius: 12px;
-        --font-display: 'Syne', sans-serif;
-        --font-body: 'DM Sans', sans-serif;
+        --bg: #fff8f0;
+        --surface: #ffffff;
+        --surface2: #fff3e6;
+        --border: #ffe0c0;
+        --border2: #ffc890;
+        --text: #2d1a00;
+        --muted: #a07050;
+        --accent: #ff6b2b;
+        --accent2: #ff8f00;
+        --green: #43a047;
+        --green-bg: #e8f5e9;
+        --green-bd: #81c784;
+        --red: #e53935;
+        --red-bg: #ffebee;
+        --red-bd: #ef9a9a;
+        --orange: #f57f17;
+        --orange-bg: #fff8e1;
+        --orange-bd: #ffc107;
+        --font: 'Nunito', sans-serif;
       }
       * {
         box-sizing: border-box;
@@ -36,7 +40,7 @@
       body {
         background: var(--bg);
         color: var(--text);
-        font-family: var(--font-body);
+        font-family: var(--font);
         min-height: 100vh;
       }
 
@@ -47,54 +51,113 @@
         align-items: center;
         justify-content: center;
         padding: 1rem;
+        background: linear-gradient(
+          160deg,
+          #ff6b2b 0%,
+          #ff8f00 55%,
+          #ffd600 100%
+        );
       }
       .login-box {
         background: var(--surface);
-        border: 1px solid var(--border2);
-        border-radius: var(--radius);
+        border-radius: 24px;
         padding: 2rem;
         width: 100%;
         max-width: 360px;
+        box-shadow: 0 8px 32px rgba(255, 107, 43, 0.25);
+      }
+      .login-logo {
+        font-size: 40px;
+        text-align: center;
+        margin-bottom: 8px;
       }
       .login-box h2 {
-        font-family: var(--font-display);
         font-size: 22px;
-        font-weight: 700;
-        margin-bottom: 6px;
+        font-weight: 900;
+        text-align: center;
+        margin-bottom: 4px;
       }
       .login-box p {
         font-size: 13px;
+        font-weight: 600;
         color: var(--muted);
+        text-align: center;
         margin-bottom: 1.5rem;
+      }
+      .f-label {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        display: block;
+        margin-bottom: 5px;
+      }
+      .f-input {
+        width: 100%;
+        background: var(--bg);
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 14px;
+        color: var(--text);
+        font-family: var(--font);
+        font-size: 14px;
+        font-weight: 700;
+        outline: none;
+        margin-bottom: 12px;
+        transition: border-color 0.2s;
+      }
+      .f-input:focus {
+        border-color: var(--accent);
+      }
+      .btn-login {
+        width: 100%;
+        padding: 13px;
+        background: linear-gradient(135deg, #ff6b2b, #ff8f00);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-family: var(--font);
+        font-size: 15px;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(255, 107, 43, 0.3);
+      }
+      .err-msg {
+        color: var(--red);
+        font-size: 13px;
+        font-weight: 700;
+        margin-top: 8px;
+        text-align: center;
       }
 
       /* NAV */
       .nav {
         background: var(--surface);
-        border-bottom: 1px solid var(--border);
-        padding: 0 1.5rem;
+        border-bottom: 3px solid var(--border);
         display: flex;
         align-items: center;
-        gap: 0;
+        padding: 0 14px;
         overflow-x: auto;
       }
       .nav-brand {
-        font-family: var(--font-display);
-        font-size: 14px;
-        font-weight: 700;
+        font-size: 15px;
+        font-weight: 900;
         color: var(--accent);
-        padding: 14px 16px 14px 0;
+        padding: 14px 14px 14px 0;
         margin-right: 8px;
-        white-space: nowrap;
-        border-right: 1px solid var(--border);
+        border-right: 2px solid var(--border);
         flex-shrink: 0;
+        white-space: nowrap;
       }
       .nav-tab {
-        padding: 14px 14px;
+        padding: 14px 12px;
         font-size: 13px;
+        font-weight: 800;
         color: var(--muted);
         cursor: pointer;
-        border-bottom: 2px solid transparent;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -3px;
         white-space: nowrap;
         transition: all 0.2s;
       }
@@ -108,6 +171,7 @@
       .nav-logout {
         margin-left: auto;
         font-size: 12px;
+        font-weight: 700;
         color: var(--muted);
         cursor: pointer;
         padding: 14px 0;
@@ -120,7 +184,7 @@
       /* PAGES */
       .page {
         display: none;
-        padding: 1.5rem;
+        padding: 1.2rem;
       }
       .page.active {
         display: block;
@@ -131,7 +195,7 @@
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.2rem;
       }
       @media (min-width: 600px) {
         .metrics {
@@ -140,159 +204,204 @@
       }
       .metric {
         background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
+        border: 2px solid var(--border);
+        border-radius: 16px;
         padding: 1rem;
+        text-align: center;
       }
       .metric-label {
         font-size: 11px;
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
         color: var(--muted);
         margin-bottom: 6px;
       }
       .metric-val {
-        font-family: var(--font-display);
-        font-size: 26px;
-        font-weight: 700;
+        font-size: 28px;
+        font-weight: 900;
       }
-      .metric-val.green {
+      .metric-val.g {
         color: var(--green);
       }
-      .metric-val.orange {
+      .metric-val.o {
         color: var(--orange);
       }
-      .metric-val.accent {
+      .metric-val.a {
         color: var(--accent);
       }
 
-      /* ORDERS TABLE */
+      /* TABLE */
       .section-title {
-        font-family: var(--font-display);
         font-size: 13px;
-        font-weight: 600;
-        letter-spacing: 1px;
+        font-weight: 900;
         text-transform: uppercase;
+        letter-spacing: 0.5px;
         color: var(--muted);
-        margin-bottom: 12px;
+        margin-bottom: 10px;
       }
-      .orders-wrap {
+      .filter-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
+      }
+      .filter-btn {
+        padding: 6px 14px;
+        border-radius: 20px;
+        border: 2px solid var(--border);
+        background: var(--surface);
+        font-family: var(--font);
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .filter-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .filter-btn.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+      .table-wrap {
         overflow-x: auto;
+        background: var(--surface);
+        border: 2px solid var(--border);
+        border-radius: 16px;
       }
       table {
         width: 100%;
         border-collapse: collapse;
         font-size: 13px;
-        min-width: 600px;
+        min-width: 560px;
       }
       th {
         text-align: left;
-        padding: 10px 12px;
+        padding: 10px 14px;
         color: var(--muted);
-        font-weight: 500;
-        border-bottom: 1px solid var(--border2);
-        font-size: 12px;
+        font-weight: 800;
+        border-bottom: 2px solid var(--border);
+        font-size: 11px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
       td {
-        padding: 12px;
+        padding: 12px 14px;
         border-bottom: 1px solid var(--border);
         vertical-align: middle;
+        font-weight: 700;
+      }
+      tr:last-child td {
+        border-bottom: none;
       }
       tr:hover td {
-        background: var(--surface2);
+        background: var(--bg);
       }
       .badge {
         display: inline-block;
         font-size: 11px;
-        font-weight: 600;
-        padding: 3px 9px;
+        font-weight: 800;
+        padding: 4px 10px;
         border-radius: 20px;
-        letter-spacing: 0.3px;
       }
       .badge-pending {
-        background: rgba(243, 156, 18, 0.12);
+        background: var(--orange-bg);
         color: var(--orange);
-        border: 1px solid rgba(243, 156, 18, 0.25);
+        border: 1.5px solid var(--orange-bd);
       }
       .badge-confirmed {
-        background: rgba(46, 204, 113, 0.12);
+        background: var(--green-bg);
         color: var(--green);
-        border: 1px solid rgba(46, 204, 113, 0.25);
+        border: 1.5px solid var(--green-bd);
       }
       .badge-cancelled {
-        background: rgba(231, 76, 60, 0.1);
+        background: var(--red-bg);
         color: var(--red);
-        border: 1px solid rgba(231, 76, 60, 0.2);
+        border: 1.5px solid var(--red-bd);
       }
       .action-btn {
         font-size: 12px;
-        padding: 5px 10px;
-        border-radius: 6px;
-        border: 1px solid var(--border2);
+        font-weight: 800;
+        padding: 6px 12px;
+        border-radius: 8px;
+        border: 2px solid;
         background: transparent;
-        color: var(--text);
         cursor: pointer;
+        font-family: var(--font);
         margin-right: 4px;
-        font-family: var(--font-body);
         transition: all 0.15s;
       }
       .action-btn.confirm {
-        border-color: rgba(46, 204, 113, 0.4);
+        border-color: var(--green-bd);
         color: var(--green);
       }
       .action-btn.confirm:hover {
-        background: rgba(46, 204, 113, 0.1);
+        background: var(--green-bg);
       }
       .action-btn.cancel {
-        border-color: rgba(231, 76, 60, 0.4);
+        border-color: var(--red-bd);
         color: var(--red);
       }
       .action-btn.cancel:hover {
-        background: rgba(231, 76, 60, 0.1);
+        background: var(--red-bg);
       }
       .empty {
         text-align: center;
         padding: 3rem;
         color: var(--muted);
         font-size: 14px;
+        font-weight: 700;
       }
 
       /* GRID */
       .nums-grid-admin {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
-        gap: 5px;
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        gap: 6px;
       }
       .num-cell {
         aspect-ratio: 1;
-        border: 1px solid var(--border);
-        border-radius: 7px;
+        border: 2px solid var(--border);
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: var(--font-display);
         font-size: 13px;
-        font-weight: 600;
+        font-weight: 800;
         background: var(--surface);
+        color: var(--muted);
       }
       .num-cell.confirmed {
-        background: rgba(46, 204, 113, 0.1);
-        border-color: rgba(46, 204, 113, 0.3);
+        background: var(--green-bg);
+        border-color: var(--green-bd);
         color: var(--green);
       }
       .num-cell.pending {
-        background: rgba(243, 156, 18, 0.1);
-        border-color: rgba(243, 156, 18, 0.3);
+        background: var(--orange-bg);
+        border-color: var(--orange-bd);
         color: var(--orange);
       }
 
-      /* FORMS */
+      /* CONFIG FORMS */
+      .card {
+        background: var(--surface);
+        border: 2px solid var(--border);
+        border-radius: 16px;
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+      }
+      .card-title {
+        font-size: 15px;
+        font-weight: 900;
+        margin-bottom: 1rem;
+      }
       .form-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 14px;
+        gap: 12px;
       }
       @media (max-width: 500px) {
         .form-grid {
@@ -309,131 +418,68 @@
       }
       label {
         font-size: 12px;
+        font-weight: 800;
         color: var(--muted);
+        text-transform: uppercase;
         letter-spacing: 0.3px;
       }
       input,
-      select,
-      textarea {
-        background: var(--surface2);
-        border: 1px solid var(--border2);
-        border-radius: 8px;
-        padding: 10px 12px;
+      select {
+        background: var(--bg);
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        padding: 9px 12px;
         color: var(--text);
-        font-family: var(--font-body);
+        font-family: var(--font);
         font-size: 14px;
+        font-weight: 700;
         outline: none;
-        transition: border-color 0.2s;
         width: 100%;
+        transition: border-color 0.2s;
       }
       input:focus,
       select:focus {
         border-color: var(--accent);
       }
       select option {
-        background: var(--surface2);
+        background: var(--surface);
       }
       .btn-save {
-        margin-top: 1.2rem;
         padding: 12px 28px;
-        background: var(--accent);
-        color: #0d0d0d;
+        background: linear-gradient(135deg, #ff6b2b, #ff8f00);
+        color: #fff;
         border: none;
-        border-radius: 8px;
-        font-family: var(--font-display);
+        border-radius: 12px;
+        font-family: var(--font);
         font-size: 14px;
-        font-weight: 700;
+        font-weight: 900;
         cursor: pointer;
+        box-shadow: 0 4px 12px rgba(255, 107, 43, 0.25);
       }
       .btn-save:hover {
-        background: var(--accent2);
+        opacity: 0.9;
       }
       .save-ok {
         font-size: 13px;
+        font-weight: 800;
         color: var(--green);
         margin-left: 12px;
       }
-      .card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 1.2rem;
-        margin-bottom: 1rem;
-      }
-      .card-title {
-        font-family: var(--font-display);
-        font-size: 15px;
-        font-weight: 600;
-        margin-bottom: 1rem;
-      }
 
-      /* LOGIN FORM SHARED */
-      .f-label {
-        font-size: 12px;
-        color: var(--muted);
-        margin-bottom: 4px;
-        display: block;
-      }
-      .f-input {
-        width: 100%;
-        background: var(--bg);
-        border: 1px solid var(--border2);
-        border-radius: 8px;
-        padding: 10px 14px;
-        color: var(--text);
-        font-family: var(--font-body);
-        font-size: 14px;
-        outline: none;
-        margin-bottom: 12px;
-      }
-      .f-input:focus {
-        border-color: var(--accent);
-      }
-      .btn-login {
-        width: 100%;
-        padding: 12px;
-        background: var(--accent);
-        color: #0d0d0d;
-        border: none;
-        border-radius: 8px;
-        font-family: var(--font-display);
-        font-size: 15px;
-        font-weight: 700;
-        cursor: pointer;
-      }
-      .err-msg {
-        color: var(--red);
-        font-size: 13px;
-        margin-top: 8px;
-        text-align: center;
-      }
-      .loading-full {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 200px;
-        color: var(--muted);
-        font-size: 14px;
-      }
       .loader {
         display: inline-block;
         width: 20px;
         height: 20px;
-        border: 2px solid var(--border2);
+        border: 2px solid var(--border);
         border-top-color: var(--accent);
         border-radius: 50%;
         animation: spin 0.7s linear infinite;
-        margin-right: 8px;
+        margin-right: 6px;
       }
       @keyframes spin {
         to {
           transform: rotate(360deg);
         }
-      }
-      .payer-info {
-        font-size: 11px;
-        color: var(--muted);
-        margin-top: 2px;
       }
     </style>
   </head>
@@ -441,8 +487,9 @@
     <!-- LOGIN -->
     <div class="login-screen" id="login-screen">
       <div class="login-box">
-        <h2>Admin — Rifa</h2>
-        <p>Entre com seu e-mail e senha para acessar o painel.</p>
+        <div class="login-logo">🎟️</div>
+        <h2>Painel Admin</h2>
+        <p>Entre para gerenciar sua rifa</p>
         <label class="f-label">E-mail</label>
         <input
           class="f-input"
@@ -458,66 +505,65 @@
           placeholder="••••••••"
           onkeydown="if(event.key==='Enter')doLogin()"
         />
-        <button class="btn-login" onclick="doLogin()">Entrar</button>
+        <button class="btn-login" onclick="doLogin()">Entrar 🚀</button>
         <div class="err-msg" id="login-err"></div>
       </div>
     </div>
 
-    <!-- ADMIN APP -->
+    <!-- APP -->
     <div id="admin-app" style="display: none">
       <div class="nav">
-        <div class="nav-brand">🎟 Rifa Admin</div>
+        <div class="nav-brand">🎟️ Admin</div>
         <div class="nav-tab active" onclick="switchTab('orders',this)">
-          Pedidos
+          📋 Pedidos
         </div>
-        <div class="nav-tab" onclick="switchTab('grid',this)">Mapa</div>
-        <div class="nav-tab" onclick="switchTab('config',this)">Configurar</div>
+        <div class="nav-tab" onclick="switchTab('grid',this)">🗺️ Mapa</div>
+        <div class="nav-tab" onclick="switchTab('config',this)">⚙️ Config</div>
         <div class="nav-logout" onclick="doLogout()">Sair</div>
       </div>
 
-      <!-- ORDERS -->
+      <!-- PEDIDOS -->
       <div class="page active" id="tab-orders">
-        <div class="metrics" id="metrics-row">
+        <div class="metrics">
           <div class="metric">
-            <div class="metric-label">Confirmados</div>
-            <div class="metric-val green" id="m-conf">—</div>
+            <div class="metric-label">✅ Confirmados</div>
+            <div class="metric-val g" id="m-conf">—</div>
           </div>
           <div class="metric">
-            <div class="metric-label">Pendentes</div>
-            <div class="metric-val orange" id="m-pend">—</div>
+            <div class="metric-label">⏳ Pendentes</div>
+            <div class="metric-val o" id="m-pend">—</div>
           </div>
           <div class="metric">
-            <div class="metric-label">Disponíveis</div>
+            <div class="metric-label">🎯 Disponíveis</div>
             <div class="metric-val" id="m-free">—</div>
           </div>
           <div class="metric">
-            <div class="metric-label">Arrecadado</div>
-            <div class="metric-val accent" id="m-rev">—</div>
+            <div class="metric-label">💰 Arrecadado</div>
+            <div class="metric-val a" id="m-rev">—</div>
           </div>
         </div>
         <div class="section-title">Pedidos</div>
-        <div
-          style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap"
-        >
-          <select
-            id="filter-status"
-            onchange="renderOrders()"
-            style="width: auto; padding: 6px 12px; font-size: 13px"
-          >
-            <option value="">Todos</option>
-            <option value="pending">Pendentes</option>
-            <option value="confirmed">Confirmados</option>
-            <option value="cancelled">Cancelados</option>
-          </select>
+        <div class="filter-row">
+          <button class="filter-btn active" onclick="setFilter('',this)">
+            Todos
+          </button>
+          <button class="filter-btn" onclick="setFilter('pending',this)">
+            ⏳ Pendentes
+          </button>
+          <button class="filter-btn" onclick="setFilter('confirmed',this)">
+            ✅ Confirmados
+          </button>
+          <button class="filter-btn" onclick="setFilter('cancelled',this)">
+            ❌ Cancelados
+          </button>
         </div>
-        <div class="orders-wrap">
+        <div class="table-wrap">
           <table>
             <thead>
               <tr>
                 <th>Nome</th>
                 <th>WhatsApp</th>
                 <th>Números</th>
-                <th>Conta PIX pagadora</th>
                 <th>Total</th>
                 <th>Status</th>
                 <th>Ações</th>
@@ -526,74 +572,25 @@
             <tbody id="orders-tbody"></tbody>
           </table>
           <div id="no-orders" class="empty" style="display: none">
-            Nenhum pedido encontrado
+            🎈 Nenhum pedido encontrado
           </div>
         </div>
       </div>
 
-      <!-- GRID MAP -->
+      <!-- MAPA -->
       <div class="page" id="tab-grid">
         <div class="section-title">Mapa dos números</div>
         <div
           style="display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap"
         >
-          <span
-            style="
-              font-size: 12px;
-              color: var(--green);
-              display: flex;
-              align-items: center;
-              gap: 5px;
-            "
-            ><span
-              style="
-                display: inline-block;
-                width: 10px;
-                height: 10px;
-                background: rgba(46, 204, 113, 0.3);
-                border-radius: 3px;
-              "
-            ></span
-            >Confirmado</span
+          <span style="font-size: 12px; font-weight: 800; color: var(--green)"
+            >✅ Confirmado</span
           >
-          <span
-            style="
-              font-size: 12px;
-              color: var(--orange);
-              display: flex;
-              align-items: center;
-              gap: 5px;
-            "
-            ><span
-              style="
-                display: inline-block;
-                width: 10px;
-                height: 10px;
-                background: rgba(243, 156, 18, 0.3);
-                border-radius: 3px;
-              "
-            ></span
-            >Reservado</span
+          <span style="font-size: 12px; font-weight: 800; color: var(--orange)"
+            >⏳ Reservado</span
           >
-          <span
-            style="
-              font-size: 12px;
-              color: var(--muted);
-              display: flex;
-              align-items: center;
-              gap: 5px;
-            "
-            ><span
-              style="
-                display: inline-block;
-                width: 10px;
-                height: 10px;
-                background: var(--surface);
-                border: 1px solid var(--border);
-                border-radius: 3px;
-              "
-            ></span
-            >Livre</span
+          <span style="font-size: 12px; font-weight: 800; color: var(--muted)"
+            >◻️ Livre</span
           >
         </div>
         <div class="nums-grid-admin" id="admin-num-grid"></div>
@@ -602,14 +599,14 @@
       <!-- CONFIG -->
       <div class="page" id="tab-config">
         <div class="card">
-          <div class="card-title">Informações da rifa</div>
+          <div class="card-title">🎟️ Informações da rifa</div>
           <div class="form-grid">
             <div class="form-group">
-              <label>Nome da rifa *</label
-              ><input id="cfg-title" placeholder="Ex: Rifa do iPhone 16 Pro" />
+              <label>Nome da rifa</label
+              ><input id="cfg-title" placeholder="Ex: Rifa da Festa Junina" />
             </div>
             <div class="form-group">
-              <label>Data do sorteio *</label
+              <label>Data do sorteio</label
               ><input id="cfg-date" placeholder="Ex: 30 de abril de 2025" />
             </div>
             <div class="form-group">
@@ -634,43 +631,78 @@
           </div>
         </div>
         <div class="card">
-          <div class="card-title">Dados PIX</div>
+          <div class="card-title">💸 Dados PIX</div>
           <div class="form-grid">
             <div class="form-group">
-              <label>Chave PIX (telefone, CPF, e-mail ou aleatória)</label
-              ><input id="cfg-pix" placeholder="Ex: 11999990000" />
+              <label>Chave PIX</label
+              ><input
+                id="cfg-pix"
+                placeholder="Telefone, CPF, e-mail ou chave aleatória"
+              />
             </div>
             <div class="form-group">
               <label>Nome do beneficiário</label
               ><input id="cfg-pixname" placeholder="Seu nome completo" />
             </div>
             <div class="form-group">
-              <label>Cidade (para o QR Code)</label
+              <label>Cidade</label
               ><input id="cfg-city" placeholder="Ex: SAO PAULO" />
             </div>
           </div>
         </div>
         <div class="card">
-          <div class="card-title">WhatsApp do organizador</div>
+          <div class="card-title">📱 WhatsApp do organizador</div>
           <div class="form-grid">
             <div class="form-group full">
               <label>Número com código do país (somente dígitos)</label
               ><input id="cfg-wa" placeholder="5511999990000" />
             </div>
           </div>
-          <div style="font-size: 12px; color: var(--muted); margin-top: 6px">
-            Pedidos confirmados/cancelados abrem mensagem automática no WhatsApp
-            do participante.
+          <p
+            style="
+              font-size: 12px;
+              font-weight: 600;
+              color: var(--muted);
+              margin-top: 8px;
+            "
+          >
+            Ao confirmar ou cancelar um pedido, o WhatsApp do participante abre
+            com a mensagem já preenchida.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            🔗 Link do site (para mensagem de cancelamento)
           </div>
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>URL do site da rifa</label
+              ><input
+                id="cfg-site-url"
+                placeholder="https://seu-usuario.github.io/minha-rifa/"
+              />
+            </div>
+          </div>
+          <p
+            style="
+              font-size: 12px;
+              font-weight: 600;
+              color: var(--muted);
+              margin-top: 8px;
+            "
+          >
+            Esse link é enviado na mensagem de cancelamento para o participante
+            tentar novamente.
+          </p>
         </div>
         <div
           style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px"
         >
           <button class="btn-save" onclick="saveConfig()">
-            Salvar configurações
+            💾 Salvar configurações
           </button>
           <span class="save-ok" id="save-ok" style="display: none"
-            >✅ Salvo!</span
+            >✅ Salvo com sucesso!</span
           >
         </div>
       </div>
@@ -682,8 +714,9 @@
         'sb_publishable_cMSvSa87_re3vAhuc9uzCQ_qlOYBh8f';
       const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      let allOrders = [];
-      let cfg = {};
+      let allOrders = [],
+        cfg = {},
+        currentFilter = '';
 
       async function doLogin() {
         const email = document.getElementById('l-email').value.trim();
@@ -694,7 +727,7 @@
         });
         if (error) {
           document.getElementById('login-err').textContent =
-            'E-mail ou senha incorretos.';
+            '❌ E-mail ou senha incorretos.';
           return;
         }
         showApp();
@@ -733,6 +766,7 @@
         document.getElementById('cfg-pixname').value = data.pix_name || '';
         document.getElementById('cfg-city').value = data.city || '';
         document.getElementById('cfg-wa').value = data.organizer_wa || '';
+        document.getElementById('cfg-site-url').value = data.site_url || '';
       }
 
       async function saveConfig() {
@@ -748,12 +782,13 @@
           pix_name: document.getElementById('cfg-pixname').value,
           city: document.getElementById('cfg-city').value.toUpperCase(),
           organizer_wa: document.getElementById('cfg-wa').value,
+          site_url: document.getElementById('cfg-site-url').value,
         };
         await sb.from('config').upsert(payload);
         cfg = payload;
         const ok = document.getElementById('save-ok');
         ok.style.display = 'inline';
-        setTimeout(() => (ok.style.display = 'none'), 2500);
+        setTimeout(() => (ok.style.display = 'none'), 3000);
       }
 
       async function loadOrders() {
@@ -767,52 +802,59 @@
         buildAdminGrid();
       }
 
+      function setFilter(val, el) {
+        currentFilter = val;
+        document
+          .querySelectorAll('.filter-btn')
+          .forEach((b) => b.classList.remove('active'));
+        el.classList.add('active');
+        renderOrders();
+      }
+
       function renderOrders() {
-        const filter = document.getElementById('filter-status').value;
-        const list = filter
-          ? allOrders.filter((o) => o.status === filter)
+        const list = currentFilter
+          ? allOrders.filter((o) => o.status === currentFilter)
           : allOrders;
         const tbody = document.getElementById('orders-tbody');
         tbody.innerHTML = '';
         document.getElementById('no-orders').style.display =
           list.length === 0 ? 'block' : 'none';
+        const labels = {
+          pending: '⏳ Aguardando',
+          confirmed: '✅ Confirmado',
+          cancelled: '❌ Cancelado',
+        };
         list.forEach((o) => {
           const tr = document.createElement('tr');
-          const payerCell = o.payer_pix
-            ? `<span style="color:var(--text)">${o.payer_pix}</span>`
-            : `<span style="color:var(--muted);font-style:italic">Própria conta</span>`;
           const actions =
             o.status === 'pending'
               ? `<button class="action-btn confirm" onclick="confirmOrder('${
                   o.id
                 }','${o.name}','${o.phone}','${o.numbers.join(
                   ', '
-                )}')">Confirmar</button>
+                )}')">✅ Confirmar</button>
          <button class="action-btn cancel" onclick="cancelOrder('${o.id}','${
                   o.name
-                }','${o.phone}','${o.numbers.join(', ')}')">Cancelar</button>`
+                }','${o.phone}','${o.numbers.join(
+                  ', '
+                )}')">❌ Cancelar</button>`
               : `<span style="font-size:12px;color:var(--muted)">—</span>`;
           tr.innerHTML = `
-      <td style="font-weight:500">${o.name}</td>
+      <td>${o.name}</td>
       <td><a href="https://wa.me/${o.phone.replace(
         /\D/g,
         ''
-      )}" target="_blank" style="color:var(--green);text-decoration:none">${
+      )}" target="_blank" style="color:var(--green);font-weight:800;text-decoration:none">📱 ${
             o.phone
           }</a></td>
       <td style="font-family:monospace;font-size:12px">${o.numbers.join(
         ', '
       )}</td>
-      <td>${payerCell}</td>
-      <td style="font-weight:600;color:var(--accent)">R$ ${parseFloat(o.total)
+      <td style="font-weight:900;color:var(--accent)">R$ ${parseFloat(o.total)
         .toFixed(2)
         .replace('.', ',')}</td>
       <td><span class="badge badge-${o.status}">${
-            {
-              pending: 'Aguardando',
-              confirmed: 'Confirmado',
-              cancelled: 'Cancelado',
-            }[o.status]
+            labels[o.status] || o.status
           }</span></td>
       <td>${actions}</td>`;
           tbody.appendChild(tr);
@@ -822,7 +864,7 @@
       async function confirmOrder(id, name, phone, nums) {
         await sb.from('orders').update({ status: 'confirmed' }).eq('id', id);
         const msg = encodeURIComponent(
-          `Olá ${name}! ✅ Seu pagamento foi confirmado!\n\nVocê está participando da rifa *${cfg.title}* com os números: *${nums}*\n\nBoa sorte! 🍀`
+          `Olá ${name}! 🎉✅ Seu pagamento foi confirmado!\n\nVocê está participando da *${cfg.title}* com os números: *${nums}*\n\n🍀 Boa sorte! O sorteio é dia ${cfg.draw_date}.`
         );
         window.open(
           `https://wa.me/${phone.replace(/\D/g, '')}?text=${msg}`,
@@ -834,8 +876,12 @@
       async function cancelOrder(id, name, phone, nums) {
         if (!confirm(`Cancelar reserva de ${name}?`)) return;
         await sb.from('orders').update({ status: 'cancelled' }).eq('id', id);
+        const siteLink = cfg.site_url || '';
+        const linkPart = siteLink
+          ? `\n\nSe quiser tentar novamente, acesse o link:\n${siteLink}`
+          : '';
         const msg = encodeURIComponent(
-          `Olá ${name}! ⚠️ Não identificamos o pagamento para os números *${nums}* da rifa *${cfg.title}*.\n\nA reserva foi cancelada. Se quiser, acesse o link e tente novamente!`
+          `Olá ${name}! ⚠️ Não identificamos o pagamento para os números *${nums}* da *${cfg.title}*.\n\nA reserva foi cancelada automaticamente.${linkPart}\n\nQualquer dúvida, nos chame aqui! 😊`
         );
         window.open(
           `https://wa.me/${phone.replace(/\D/g, '')}?text=${msg}`,
@@ -875,8 +921,7 @@
             .filter((o) => o.status === 'pending')
             .flatMap((o) => o.numbers)
         );
-        const count = cfg.num_count || 100;
-        for (let i = 1; i <= count; i++) {
+        for (let i = 1; i <= (cfg.num_count || 100); i++) {
           const n = String(i).padStart(2, '0');
           const el = document.createElement('div');
           el.className =
@@ -902,7 +947,6 @@
         el.classList.add('active');
       }
 
-      // Auto-login if session exists
       sb.auth.getSession().then(({ data: { session } }) => {
         if (session) showApp();
       });
